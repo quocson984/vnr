@@ -1,46 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { 
   BookOpen, Flag, Shield, Star, Swords, Users, 
   Calendar, MessageCircle, X, Send, Sparkles, 
   BrainCircuit, CheckCircle2, XCircle, Loader2, PlayCircle
 } from 'lucide-react';
 import './App.css';
+import { callGeminiAPI } from './api/geminiClient';
 
-// --- GEMINI API CONFIGURATION ---
-const apiKey = ""; // Lấy từ runtime environment
-const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
-
-const fetchGeminiWithBackoff = async (payload, maxRetries = 5) => {
-  const delays = [1000, 2000, 4000, 8000, 16000];
-  let attempt = 0;
-
-  while (attempt < maxRetries) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      attempt++;
-      if (attempt >= maxRetries) {
-        throw new Error("Không thể kết nối với AI sau nhiều lần thử. Vui lòng thử lại sau.");
-      }
-      const delayTime = delays[attempt - 1];
-      await new Promise((resolve) => setTimeout(resolve, delayTime));
-    }
-  }
-};
 
 // --- COMPONENTS ---
 
@@ -85,7 +51,7 @@ const ChatAssistant = () => {
     };
 
     try {
-      const result = await fetchGeminiWithBackoff(payload);
+      const result = await callGeminiAPI(payload);
       const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không có câu trả lời vào lúc này.";
       setMessages(prev => [...prev, { role: 'assistant', text: aiText }]);
     } catch (error) {
@@ -213,7 +179,7 @@ const QuizGenerator = () => {
     };
 
     try {
-      const result = await fetchGeminiWithBackoff(payload);
+      const result = await callGeminiAPI(payload);
       const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
       if (textResponse) {
         const parsedData = JSON.parse(textResponse);
