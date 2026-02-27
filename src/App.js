@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   BookOpen, Flag, Shield, Star, Swords, Users, 
   Calendar, MessageCircle, X, Send, Sparkles, 
