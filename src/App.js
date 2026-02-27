@@ -767,6 +767,93 @@ export default function App() {
             </div>
           </section>
 
+          {/* AI Appendix */}
+          <section className="py-16 bg-surface border-t-8 border-gold/40 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNkNGFmMzciLz48L3N2Zz4=')]"></div>
+            <div className="max-w-5xl mx-auto px-4 relative z-10">
+              <div className="text-center mb-10">
+                <Star className="text-gold w-10 h-10 mx-auto mb-3" />
+                <h2 className="font-display text-2xl md:text-3xl font-bold text-gold mb-2">
+                  PHỤ LỤC AI
+                </h2>
+                <p className="font-body text-light text-base">
+                  Thông tin công cụ, mục đích sử dụng và phạm vi nội dung.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-dark/60 border border-gold/30 rounded-xl p-6 shadow-lg">
+                  <h3 className="font-display text-gold text-lg font-bold mb-4">Công cụ sử dụng</h3>
+                  <ul className="list-disc pl-5 space-y-2 font-body text-light text-sm">
+                    <li className="flex items-center gap-3">
+                      <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ034zfY4FZs2AbqWjRVswBXA0K4OdHdz_w2g&s"
+                        alt="Gemini icon"
+                        className="w-8 h-8 rounded-full border border-gold/30 bg-dark/40"
+                      />
+                      <span>Gemini</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <img
+                        src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/chatgpt-icon.png"
+                        alt="ChatGPT icon"
+                        className="w-8 h-8 rounded-full border border-gold/30 bg-dark/40"
+                      />
+                      <span>ChatGPT</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <img
+                        src="https://play-lh.googleusercontent.com/qWDLmYCI4Lqzq8J-LhtvWvp1HIPkJb2lqkHjduXM7tnCo7N1tmKxnYdaX7CS2_5pkDuW"
+                        alt="NotebookLM icon"
+                        className="w-8 h-8 rounded-full border border-gold/30 bg-dark/40"
+                      />
+                      <span>NotebookLM</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-dark/60 border border-gold/30 rounded-xl p-6 shadow-lg">
+                  <h3 className="font-display text-gold text-lg font-bold mb-4">Mục đích sử dụng</h3>
+                  <ul className="list-disc pl-5 space-y-2 font-body text-light text-sm">
+                    <li>Tạo trang web (Gemini)</li>
+                    <li>Tạo câu hỏi (ChatGPT, Gemini)</li>
+                    <li>Tổng hợp dữ liệu (NotebookLM)</li>
+                  </ul>
+                </div>
+
+                <div className="bg-dark/60 border border-gold/30 rounded-xl p-6 shadow-lg md:col-span-2">
+                  <h3 className="font-display text-gold text-lg font-bold mb-4">Phạm vi giới hạn</h3>
+                  <ul className="list-disc pl-5 space-y-2 font-body text-light text-sm">
+                    <li>Đảng Cộng sản Việt Nam ra đời và lãnh đạo đấu tranh giành chính quyền (1930 - 1945).</li>
+                    <li>Phong trào cách mạng 1930 - 1931 và khôi phục phong trào cách mạng 1932 - 1935.</li>
+                    <li>Phong trào dân chủ 1936 - 1939.</li>
+                  </ul>
+                </div>
+
+                <div className="bg-dark/60 border border-gold/30 rounded-xl p-6 shadow-lg">
+                  <h3 className="font-display text-gold text-lg font-bold mb-4">Link Prompt chính</h3>
+                  <a
+                    href="https://gemini.google.com/share/ce0a5db2b464"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-body text-light text-sm underline hover:text-gold transition-colors"
+                  >
+                    https://gemini.google.com/share/ce0a5db2b464
+                  </a>
+                </div>
+
+                <div className="bg-dark/60 border border-gold/30 rounded-xl p-6 shadow-lg">
+                  <h3 className="font-display text-gold text-lg font-bold mb-4">Nhóm 5</h3>
+                  <ul className="list-disc pl-5 space-y-2 font-body text-light text-sm">
+                    <li>Nguyễn Quốc Sơn</li>
+                    <li>Trần Quang Khoa</li>
+                    <li>Trần Quang Duy</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Footer */}
           <footer className="bg-surface py-8 border-t border-dark relative">
             <div className="max-w-6xl mx-auto px-4 text-center">
