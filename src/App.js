@@ -5,8 +5,22 @@ import {
   BrainCircuit, CheckCircle2, XCircle, Loader2, PlayCircle
 } from 'lucide-react';
 import './App.css';
-import { callGeminiAPI } from './api/geminiClient';
 
+const callGeminiAPI = async (payload) => {
+  const response = await fetch("/api/gemini", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ payload }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.status}`);
+  }
+
+  return response.json();
+};
 
 // --- COMPONENTS ---
 
