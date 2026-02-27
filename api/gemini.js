@@ -1,106 +1,63 @@
-// // api/gemini.js - Serverless Function cho Gemini API
-// const MODEL_NAME = "gemini-1.5-flash";
-
-// const fetchGeminiWithBackoff = async (payload, maxRetries = 5) => {
-//     const apiKey = process.env.GEMINI_API_KEY;
-
-//     if (!apiKey) {
-//         throw new Error("API key không được cấu hình. Vui lòng thêm REACT_APP_GEMINI_API_KEY vào .env");
-//     }
-
-//     const delays = [1000, 2000, 4000, 8000, 16000];
-//     let attempt = 0;
-
-//     while (attempt < maxRetries) {
-//         try {
-//             const response = await fetch(
-//                 `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`,
-//                 {
-//                     method: "POST",
-//                     headers: { "Content-Type": "application/json" },
-//                     body: JSON.stringify(payload),
-//                 }
-//             );
-
-//             if (!response.ok) {
-//                 const errorText = await response.text();
-//                 throw new Error(`Gemini error ${response.status}: ${errorText}`);
-//             }
-
-//             const data = await response.json();
-//             return data;
-//         } catch (error) {
-//             attempt++;
-//             if (attempt >= maxRetries) {
-//                 throw new Error("Không thể kết nối với AI sau nhiều lần thử. Vui lòng thử lại sau.");
-//             }
-//             const delayTime = delays[attempt - 1];
-//             await new Promise((resolve) => setTimeout(resolve, delayTime));
-//         }
-//     }
-// };
-
-// // Vercel Serverless Function Handler
-// export default async function handler(req, res) {
-//     // Chỉ cho phép POST requests
-//     if (req.method !== "POST") {
-//         return res.status(405).json({ error: "Method not allowed" });
-//     }
-
-//     try {
-//         const { payload } = req.body;
-
-//         if (!payload) {
-//             return res.status(400).json({ error: "Payload is required" });
-//         }
-
-//         const result = await fetchGeminiWithBackoff(payload);
-//         return res.status(200).json(result);
-//     } catch (error) {
-//         console.error("Gemini API Error:", error);
-//         return res.status(500).json({ error: error.message });
-//     }
-// }
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  try {
-    const { payload } = req.body;
-    // Sử dụng đúng tên biến bạn đã đặt trên Vercel Dashboard
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    if (!apiKey) {
-      return res.status(500).json({ error: "API key is missing in environment variables" });
+    if (req.method !== "POST") {
+        return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    // Sử dụng model 1.5-flash để đảm bảo độ ổn định
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      systemInstruction: payload.systemInstruction?.parts?.[0]?.text
-    });
+    try {
+        const { payload } = req.body;
+        const apiKey = process.env.GEMINI_API_KEY;
 
-    const result = await model.generateContent(payload.contents[0].parts[0].text);
-    const response = await result.response;
-    const text = response.text();
-
-    // Trả về cấu trúc mà frontend của bạn đang mong đợi
-    return res.status(200).json({
-      candidates: [
-        {
-          content: {
-            parts: [{ text: text }]
-          }
+        if (!apiKey) {
+            return res.status(500).json({ error: "Thiếu GEMINI_API_KEY trên Vercel" });
         }
-      ]
-    });
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    return res.status(500).json({ error: error.message });
-  }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+
+        // 1. Khởi tạo model với cấu hình hệ thống (nếu có)
+        const modelConfig = {
+            model: "gemini-1.5-flash",
+        };
+
+        // Nếu App.js gửi systemInstruction, ta đưa vào cấu hình model
+        if (payload.systemInstruction) {
+            modelConfig.systemInstruction = payload.systemInstruction.parts[0].text;
+        }
+
+        const model = genAI.getGenerativeModel(modelConfig);
+
+        // 2. Thiết lập tham số tạo nội dung (ví dụ: JSON mode cho Quiz)
+        const generationConfig = payload.generationConfig || {};
+
+        // 3. Gọi API
+        // Lấy nội dung tin nhắn cuối cùng từ mảng contents
+        const prompt = payload.contents[0].parts[0].text;
+
+        const result = await model.generateContent({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: generationConfig,
+        });
+
+        const response = await result.response;
+        const text = response.text();
+
+        // 4. Trả về đúng định dạng mà App.js đang chờ (result.candidates[0]...)
+        return res.status(200).json({
+            candidates: [
+                {
+                    content: {
+                        parts: [{ text: text }]
+                    }
+                }
+            ]
+        });
+
+    } catch (error) {
+        console.error("Lỗi Serverless Function:", error);
+        return res.status(500).json({
+            error: error.message,
+            detail: "Kiểm tra lại định dạng payload hoặc model name"
+        });
+    }
 }
