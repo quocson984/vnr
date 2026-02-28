@@ -1,5 +1,5 @@
 const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 require('dotenv').config({ path: '../.env' });
 
 const app = express();
@@ -14,24 +14,24 @@ app.post('/api/gemini', async (req, res) => {
             return res.status(500).json({ error: 'Thiếu GEMINI_API_KEY trong file .env' });
         }
 
-        const genAI = new GoogleGenerativeAI(apiKey);
+        const ai = new GoogleGenAI({ apiKey });
 
-        const modelConfig = { model: 'gemini-1.5-flash' };
-        if (payload.systemInstruction) {
-            modelConfig.systemInstruction = payload.systemInstruction.parts[0].text;
-        }
-
-        const model = genAI.getGenerativeModel(modelConfig);
-        const generationConfig = payload.generationConfig || {};
         const prompt = payload.contents[0].parts[0].text;
+        const systemInstruction = payload.systemInstruction?.parts?.[0]?.text || '';
+        const generationConfig = payload.generationConfig || {};
 
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: generationConfig,
+        const config = {
+            ...generationConfig,
+            ...(systemInstruction ? { systemInstruction } : {}),
+        };
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: prompt,
+            config,
         });
 
-        const response = await result.response;
-        const text = response.text();
+        const text = response.text;
 
         return res.status(200).json({
             candidates: [{ content: { parts: [{ text: text }] } }]
