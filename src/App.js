@@ -59,31 +59,19 @@ function usePresReveal() {
   return ref;
 }
 
-const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
-
 const callGeminiAPI = async (payload) => {
-  const { GoogleGenAI } = await import("@google/genai");
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-  const prompt = payload.contents[0].parts[0].text;
-  const systemInstruction = payload.systemInstruction?.parts?.[0]?.text || "";
-
-  const config = {
-    ...(payload.generationConfig || {}),
-    ...(systemInstruction ? { systemInstruction } : {}),
-  };
-
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: prompt,
-    config,
+  const response = await fetch("/api/gemini", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ payload }),
   });
 
-  const text = response.text;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API error: ${response.status}`);
+  }
 
-  return {
-    candidates: [{ content: { parts: [{ text }] } }],
-  };
+  return await response.json();
 };
 
 // --- COMPONENTS ---
